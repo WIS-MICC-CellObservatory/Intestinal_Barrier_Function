@@ -74,8 +74,8 @@ tj_string = "_TJ";
 // Segmentation Parameters
 var useGaussBluhrFlag = 1; 	// 0 - goes with Tolerance 500/1500
 var GaussBluhrSigma = 1;   	//2; 
-var Tolerance = 650;       	//500; 		// Tolerance - controls the morphological segmentation
-var WaitTime = 2500; 		// 130000; 	// wait Time in ms for Morphological Segmentation, watch the log to see the actual time and tune it
+var Tolerance = 650;       	//500; 				// Tolerance - controls the morphological segmentation
+var WaitTime = 7000; 		//2500; // 130000; 	// wait Time in ms for Morphological Segmentation, watch the log to see the actual time and tune it
 var MinCellSize = 1000;   	// pixel^2
 var MaxCellSize = 150000;	// pixel^2
 
@@ -228,6 +228,11 @@ function SegmentCells(directory, resFolder, origIm, origName, origNameNoExt, sav
 	call("inra.ijpb.plugins.MorphologicalSegmentation.setDisplayFormat", "Watershed lines");
 	call("inra.ijpb.plugins.MorphologicalSegmentation.createResultImage");
 	setTool("hand");
+
+	if (!isOpen("SegmentedIm-watershed-lines"))
+	{
+		exit("You need to Increase  WaitTime  parameter \n\nInspect the last line of the  Log  window, It should be like: \n   Whole plugin took NNNN ms. \n\nSet  WaitTime  to be larger than the NNNN value indicated");
+	}
 
 	selectWindow("SegmentedIm-watershed-lines");
 	run("Invert");

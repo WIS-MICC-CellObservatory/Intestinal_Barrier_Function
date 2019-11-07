@@ -41,7 +41,8 @@
 ## Dependencies:
 
  MorphoLibJ\Morphological Segmentation: https://imagej.net/MorphoLibJ
- to install it : 
+ 
+ To install it : 
  		Help=>Update
  		Click “Manage Update sites”
  		Check “IJPB-plugins”
@@ -50,7 +51,7 @@
  
 ## Usage Instructions:
 
-  There are 2 modes of operation controled by   processMode   parameter: 
+  There are two modes of operation controled by   processMode   parameter: 
   - singleFile - asks the user to select a single TJ file to process. 
   - wholeFolder - asks the user to select a folder of images, and process all TJ images 
  
@@ -61,6 +62,5 @@
  
  The segmentation time changes based on the image size and complexity and on the computer you are using. 
  For larger images you'll need larger  WaitTime , for smaller images you can use smaller values. 
- If the value is too low, you will encounter errors in the macro - because the segmentation is not available yet
- You can see the actual time it took to run Morphological Segmentation in the Log window. Look for: Whole plugin took NNNN ms. 
+ If the value is too low, you will get an error message asking you to increase this value. 
  
