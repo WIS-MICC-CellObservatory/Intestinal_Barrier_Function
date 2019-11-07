@@ -60,6 +60,4 @@ Use Straightness instead of Tortuosity to avoid dividing by zero for the case of
 The Morphological segmentation is controlled by one parameter called *Tolerance*.
 You may need to tune it for different conditions, but make sure to use the same parameters for different biological conditions imaged by the same imaging conditions.
 
-The segmentation time changes based on the image size and complexity and on the computer you are using.
-For larger images you'll need larger *WaitTime*, for smaller images you can use smaller values.
-If the value is too low, you will get an error message asking you to increase this value.
+The segmentation time changes based on the image size and complexity and on the computer you are using. For larger images you'll need larger *WaitTime*, for smaller images you can use smaller values. If the value is too low, you will get an error message asking you to increase this value.
