@@ -8,7 +8,9 @@ Analysis is done from two points of view:
 - Shape of borders between adjacent cells : Length, Euclidean distance and Straightness of the independent TJ elements
 
 Written by: Ofra Golani at MICC Cell Observatory, Weizmann Institute of Science
+
 Software package: Fiji (ImageJ)
+
 Workflow language: ImageJ macro
 
 ## Workflow
@@ -29,6 +31,7 @@ Go over the folder of the TJ files, for each file
  	 + Quantify Euclidean distance, length and their ratio (=Straightness) of each edge
 
 Note: Straightness = Euclidean distance / Length = 1/Tortuosity: https://en.wikipedia.org/wiki/Tortuosity
+
 Use Straightness instead of Tortuosity to avoid dividing by zero for the case of closed curves
 
 ## Output
