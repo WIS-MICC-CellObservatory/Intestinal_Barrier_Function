@@ -42,12 +42,12 @@
 
  MorphoLibJ\Morphological Segmentation: https://imagej.net/MorphoLibJ
  
- To install it : 
- .. Help=>Update
- .. Click “Manage Update sites”
- .. Check “IJPB-plugins”
- ..	Click “Close”
- ..	Click “Apply changes”
+ To install it :..
+ ... Help=>Update..
+ ... Click “Manage Update sites”..
+ ... Check “IJPB-plugins”..
+ ... Click “Close”..
+ ... Click “Apply changes”
  
 ## Usage Instructions
 
