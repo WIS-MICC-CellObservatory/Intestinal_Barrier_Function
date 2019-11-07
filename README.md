@@ -29,6 +29,7 @@
  	 + Quantify euclidean distance, length and their ratio (=*Straightness*) of each edge
  	 
  Note: *Straightness* = Euclidean distance / Length = 1/*Tortuosity*: https://en.wikipedia.org/wiki/Tortuosity
+ 
  Use *Straightness* instead of *Tortuosity* to avoid dividing by zero for the case of closed curves
  
 ## Output
