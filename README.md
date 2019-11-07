@@ -34,9 +34,8 @@ Use *Straightness* instead of *Tortuosity* to avoid dividing by zero for the cas
 ## Output
 
 - Save results: 
- 	Detailed results tables (for cells and for borders) + overlay for each image
-	
-	Summary table with one line for each image: including the average values of both types of analysis 
+ 	+ Detailed results tables (for cells and for borders) + overlay for each image
+	+ Summary table with one line for each image: including the average values of both types of analysis 
 - Save the active macro parameters in a text file in the Results folder
  
 ## Dependencies
