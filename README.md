@@ -51,9 +51,9 @@ Use *Straightness* instead of *Tortuosity* to avoid dividing by zero for the cas
  
 ## Usage Instructions
 
-  There are two modes of operation controled by   processMode   parameter: 
-  - singleFile - asks the user to select a single TJ file to process. 
-  - wholeFolder - asks the user to select a folder of images, and process all TJ images 
+  There are two modes of operation controled by *processMode* parameter: 
+  - *singleFile* - prompt the user to select a single TJ file to process. 
+  - *wholeFolder* - prompt the user to select a folder of images, and process all TJ images 
  
 ## Notes
 
