@@ -1,45 +1,45 @@
-/* 
- * TightJunctionAnalysis.ijm 
- * 
+/*
+ * TightJunctionAnalysis.ijm
+ *
  * Morphological analysis of Intestinal Barrier Function based on images of epithelial tight junction (TJ)
- * Analysis is done from two points of view: 
+ * Analysis is done from two points of view:
  * - Shape of single cells:  area, Perimeter, Solidity, Roughness = Perim^2/(4*pi*Area)
- * - shape of borders between adjucent cells : Length, euclidean distance and straightness of the independent TJ elements
- *  
+ * - shape of edges between adjucent cells : Length, euclidean distance and straightness of the independent TJ elements
+ *
  * Written by: Ofra Golani at MICC Cell Observatory, Weizmann Institute of Science
- * 
- *  
- * Workflow 
+ *
+ *
+ * Workflow
  * ----------
- * Go over the folder of the TJ files, for each file 
+ * Go over the folder of the TJ files, for each file
  * - segment cells
  * 	 + Morphological Segmentation
  * 	 + Export the segmented objects to watershed lines
  * 	 + Convert it to binary image
  * 	 + add to RoiManager using Analyze Particles: filter by size [MinCellSize-MaxCellSize]
- * 	 
+ *
  * - Cell perspective quantification: area, Perimeter, Solidity, Roughness = Perim^2/(4*pi*Area)
- * - TJ perspective quantification: Length, euclidean distance and straightness of the independent TJ elements - between TJ junction points
+ * - Cell-cell edge perspective quantification: Length, Euclidean distance and straightness of the independent TJ elements - between TJ junction points
  * 	 + Skeletonize the watershed lines
  * 	 + find junction points (using Analyze Skeleton)
- * 	 + delete junction points to get independent edges 
+ * 	 + delete junction points to get independent edges
  * 	 + optionally filter small edges (MinSkeletonArea)
  * 	 + quantify euclidean distance, length and their ratio (=Straightness) of each edge
- * 	 
+ *
  * Note: Straightness = Euclidean distance / Length = 1/Tortuosity: https://en.wikipedia.org/wiki/Tortuosity
- * use Straightness instead of Tortuosity to avoid dividing by zero for the case of closed curves
- * 
+ * we calculate here Straightness instead of Tortuosity to avoid dividing by zero for the case of closed curves
+ *
  * Output
  * ---------
- * - save results: 
+ * - save results:
  * 		detailed results tables (for cells and for borders) + overlay for each image
- * 		summary table with one line for each image: including the average values of both types of analysis 
+ * 		summary table with one line for each image: including the average values of both types of analysis
  * - save the active macro parameters in a text file in the Results folder
- * 
+ *
  * Dependencies:
  * -------------
  * MorphoLibJ\Morphological Segmentation: https://imagej.net/MorphoLibJ
- * to install it : 
+ * to install it :
  * 		Help=>Update
  * 		Click “Manage Update sites”
  * 		Check “IJPB-plugins”
@@ -48,32 +48,32 @@
  * 
  * Instructions:
  * -------------
- *  There are 2 modes of operation controled by   processMode   parameter: 
- *  - singleFile - asks the user to select a single TJ file to process. 
- *  - wholeFolder - asks the user to select a folder of images, and process all TJ images 
- * 
+ *  There are 2 modes of operation controled by   processMode   parameter:
+ *  - singleFile - asks the user to select a single TJ file to process.
+ *  - wholeFolder - asks the user to select a folder of images, and process all TJ images
+ *
  * Notes:
  * ------
- * The Morphological segmentation is controled by one parameter called "Tolerance". 
- * You may need to tune it for different conditions, but make sure to use the same parameters for different biological conditions imaged by teh same imaging conditions. 
- * 
- * The segmentation time changes based on the image size and complexity and on the computer you are using. 
- * For larger images you'll need larger  WaitTime , for smaller images you can use smaller values. 
+ * The Morphological segmentation is controled by one parameter called "Tolerance".
+ * You may need to tune it for different conditions, but make sure to use the same parameters for different biological conditions imaged by teh same imaging conditions.
+ *
+ * The segmentation time changes based on the image size and complexity and on the computer you are using.
+ * For larger images you'll need larger  WaitTime , for smaller images you can use smaller values.
  * If the value is too low, you will encounter errors in the macro - because the segmentation is not available yet
- * You can see the actual time it took to run Morphological Segmentation in the Log window. Look for: Whole plugin took NNNN ms. 
- * 
+ * You can see the actual time it took to run Morphological Segmentation in the Log window. Look for: Whole plugin took NNNN ms.
+ *
  */
 
-// Parameters 
+// Parameters
 // Mode of operation
 var processMode = "wholeFolder"; // "singleFile" or "wholeFolder"
 
 // Prms for matching file names
-tj_string = "_TJ"; 
+tj_string = "_TJ";
 
 // Segmentation Parameters
 var useGaussBluhrFlag = 1; 	// 0 - goes with Tolerance 500/1500
-var GaussBluhrSigma = 1;   	//2; 
+var GaussBluhrSigma = 1;   	//2;
 var Tolerance = 650;       	//500; 				// Tolerance - controls the morphological segmentation
 var WaitTime = 7000; 		//2500; // 130000; 	// wait Time in ms for Morphological Segmentation, watch the log to see the actual time and tune it
 var MinCellSize = 1000;   	// pixel^2
@@ -87,13 +87,13 @@ var SolidityLUTName = "Fire";
 var RoughnessLUTName = "Fire";
 var StraigtnessLUTName = "Fire";
 
-var MinSkeletonArea = 30; 
+var MinSkeletonArea = 30;
 var calibrationZoom = 1; // 6 for montage images, 1 for high resolution
 
 var ResultsSubFolder = "Results";
 
 // how to treat input
-var fileExtention = ".tif"; // ".ome.tif"; 
+var fileExtention = ".tif"; // ".ome.tif";
 
 var batchModeFlag = 0; // keep it to 0 - Morphological Segmentation does not work with BatchMode
 var CleanupFlag = true;
@@ -106,12 +106,12 @@ Initialization();
 if (matches(processMode, "singleFile")) {
 	file_name=File.openDialog("Please select TJ file to analyze");
 	open(file_name);
-	directory = File.directory; 
+	directory = File.directory;
 }
 else if (matches(processMode, "wholeFolder")) {
 	directory = getDirectory("Open Image folders"); }
 
-resFolder = directory + File.separator + ResultsSubFolder + File.separator; 
+resFolder = directory + File.separator + ResultsSubFolder + File.separator;
 File.makeDirectory(resFolder);
 print("inDir=",directory," outDir=",resFolder);
 if (batchModeFlag)
@@ -121,7 +121,7 @@ if (matches(processMode, "singleFile")) {
 	ProcessFile(directory, resFolder); }
 else if (matches(processMode, "wholeFolder")) {
 	ProcessFiles(directory, resFolder, tj_string); }
-	
+
 setBatchMode(false);
 PrintPrms();
 
@@ -132,34 +132,34 @@ function PrintPrms()
 	// print parameters to Prm file for documentation
 	PrmFile = resFolder+"TightJunctionAnalysisParameters.txt";
 	File.saveString("useGaussBluhrFlag="+useGaussBluhrFlag, PrmFile);
-	File.append("", PrmFile); 
-	File.append("GaussBluhrSigma="+GaussBluhrSigma, PrmFile); 
-	File.append("Tolerance="+Tolerance, PrmFile); 
-	File.append("MinCellSize="+MinCellSize, PrmFile); 
-	File.append("MaxCellSize="+MaxCellSize, PrmFile); 
-	File.append("MaxRougnessForColorCode="+MaxRougnessForColorCode, PrmFile); 
-	File.append("MinStraigtnessForColorCode="+MinStraigtnessForColorCode, PrmFile); 
-	File.append("MinSkeletonArea="+MinSkeletonArea, PrmFile); 
+	File.append("", PrmFile);
+	File.append("GaussBluhrSigma="+GaussBluhrSigma, PrmFile);
+	File.append("Tolerance="+Tolerance, PrmFile);
+	File.append("MinCellSize="+MinCellSize, PrmFile);
+	File.append("MaxCellSize="+MaxCellSize, PrmFile);
+	File.append("MaxRougnessForColorCode="+MaxRougnessForColorCode, PrmFile);
+	File.append("MinStraigtnessForColorCode="+MinStraigtnessForColorCode, PrmFile);
+	File.append("MinSkeletonArea="+MinSkeletonArea, PrmFile);
 }
 
 
 //--------------------------------------
 // Loop on all files in the folder and Run analysis on each of them
-function ProcessFiles(directory, resFolder, file_pattern) 
+function ProcessFiles(directory, resFolder, file_pattern)
 {
-	// Get the files in the folder 
+	// Get the files in the folder
 	fileListArray = getFileList(directory);
-	
+
 	// Loop over files
 	for (fileIndex = 0; fileIndex < lengthOf(fileListArray); fileIndex++) {
 		//if (endsWith(fileListArray[fileIndex], fileExtention) && indexOf(fileListArray[fileIndex], file_pattern)>0) {
 		if (endsWith(fileListArray[fileIndex], fileExtention) ) {
-			open(directory+fileListArray[fileIndex]);	
+			open(directory+fileListArray[fileIndex]);
 			print("\nProcessing:",fileListArray[fileIndex]);
 			showProgress(fileIndex/lengthOf(fileListArray));
 			ProcessFile(directory, resFolder);
-			
-		} // end of if 
+
+		} // end of if
 	} // end of for loop
 
 	// Save Results
@@ -188,19 +188,19 @@ function ProcessFile(directory, resFolder) {
 	// It is assume that the tj image is open and active
 	tjName = getTitle();
 	tjIm = getImageID();
-	
+
 	tjNameNoExt = replace(tjName, ".tif", "");
 	rawSaveName = replace(tjNameNoExt, tj_string, "");
-	
-	SegmentCells(directory, resFolder, tjIm, tjName, tjNameNoExt, rawSaveName);	
+
+	SegmentCells(directory, resFolder, tjIm, tjName, tjNameNoExt, rawSaveName);
 	if (roiManager("count") > 0)
 	{
 		QuantCells(directory, resFolder, tjIm, tjName, tjNameNoExt, rawSaveName);
 		QuantTJ(directory, resFolder, tjIm, tjName, tjNameNoExt, rawSaveName);
 	}
-		
+
 	// Cleanup
-	if (CleanupFlag==true) 
+	if (CleanupFlag==true)
 	{
 		CleanUp();
 	}
@@ -214,7 +214,7 @@ function SegmentCells(directory, resFolder, origIm, origName, origNameNoExt, sav
 	//print("SegmentCells Starts...");
 	selectWindow(origName);
 	run("Duplicate...", "title=SegmentedIm");
-	if (useGaussBluhrFlag) 
+	if (useGaussBluhrFlag)
 		run("Gaussian Blur...", "sigma="+GaussBluhrSigma);
 	run("Morphological Segmentation");
 	wait(1000); // about 1s is usually enough
@@ -248,15 +248,15 @@ function SegmentCells(directory, resFolder, origIm, origName, origNameNoExt, sav
 		rename("LabeledCells");
 		selectWindow(origName);
 		roiManager("Show All without labels");
-	
+
 		// save the ROIs
 		roiManager("Save", resFolder+saveName+"_ROIs.zip");
 		//print("Saving:",resFolder+saveName+"_ROIs.zip");
 	}
 	else
-	{ 
+	{
 		print(origNameNoExt," No Cells Found");
-	}	
+	}
 	//print("SegmentCells Done");
 }
 
@@ -277,7 +277,7 @@ function QuantCells(directory, resFolder, origIm, origName, origNameNoExt, saveN
 		Area = getResult("Area", i);
 		Solidity = getResult("Solidity", i);
 		Rough = Perim * Perim / ( 4 * PI * Area);
-		setResult("Roughness", i, Rough); 
+		setResult("Roughness", i, Rough);
 
 		meanArea = meanArea + Area;
 		meanSolidity = meanSolidity + Solidity;
@@ -304,12 +304,12 @@ function QuantCells(directory, resFolder, origIm, origName, origNameNoExt, saveN
 		IJ.renameResults("SummaryResults.xls", "Results"); // make table accessible
 	else
 		run("Clear Results");
-		
-	setResult("Label", nResults, saveName); 
-	setResult("nCells", nResults-1, nCells); 
-	setResult("meanArea", nResults-1, meanArea); 
-	setResult("meanSolidity", nResults-1, meanSolidity); 
-	setResult("meanRoughness", nResults-1, meanRoughness); 
+
+	setResult("Label", nResults, saveName);
+	setResult("nCells", nResults-1, nCells);
+	setResult("meanArea", nResults-1, meanArea);
+	setResult("meanSolidity", nResults-1, meanSolidity);
+	setResult("meanRoughness", nResults-1, meanRoughness);
 
 	// Save Results - actual saving is done at the higher level function as this table include one line for each image
 	IJ.renameResults("Results", "SummaryResults.xls"); // rename to avoid table overwrite
@@ -333,7 +333,7 @@ function QuantCells(directory, resFolder, origIm, origName, origNameNoExt, saveN
 	saveAs("Tiff", resFolder+saveName+"_OverlayWithLabel.tif");
 	//print("Saving:",resFolder+saveName+"_OverlayWithLabel.tif");
 	roiManager("UseNames", "false");
-	
+
 	/*selectWindow("CellMask");
 	saveAs("Tiff", resFolder+saveName+"_CellMask.tif");
 	//print("Saving:",resFolder+saveName+"_CellMask.tif");*/
@@ -348,13 +348,13 @@ function QuantCells(directory, resFolder, origIm, origName, origNameNoExt, saveN
 
 //----------------------------------------------------------------------
 function CreateAndSaveColorCodeImage(labeledImName, TableName, resFolder, saveName, FtrName, MinVal, MaxVal, decimalVal, LUTName)
-{		
+{
 	selectImage(labeledImName);
 	run("Assign Measure to Label", "results="+TableName+" column="+FtrName+" min="+MinVal+" max="+MaxVal);
 	run(LUTName);
 	run("Calibration Bar...", "location=[Upper Right] fill=White label=Black number=5 decimal="+decimalVal+" font=12 zoom="+calibrationZoom+" overlay");
 	run("Flatten");
-	saveAs("Tiff", resFolder+origNameNoExt+"_"+FtrName+"_Flatten.tif"); 
+	saveAs("Tiff", resFolder+origNameNoExt+"_"+FtrName+"_Flatten.tif");
 }
 
 
@@ -370,17 +370,17 @@ function QuantTJ(directory, resFolder, origIm, origName, origNameNoExt, saveName
 	selectWindow("Tagged skeleton");
 	setThreshold(99, 255);
 	setOption("BlackBackground", false);
-	run("Convert to Mask");	
+	run("Convert to Mask");
 
 	run("Analyze Particles...", "size="+MinSkeletonArea+"-Infinity show=Masks display clear summarize add");
 	run("Set Measurements...", "area mean standard modal min median display add redirect=None decimal=2");
 	CleanSkeletonIm = getImageID();
 	CleanSkeletonName = getTitle();
 
-	// now run Analyze skeleton again to get the individual labeled skeletons (after separtaion at junction points) 
+	// now run Analyze skeleton again to get the individual labeled skeletons (after separtaion at junction points)
 	run("Analyze Skeleton (2D/3D)", "prune=none show display");
 	selectWindow("Mask-labeled-skeletons");
-	
+
 	// Output the measured values into new results table
 	selectWindow("Results");
 	run("Close"); // close the table window
@@ -394,8 +394,8 @@ function QuantTJ(directory, resFolder, origIm, origName, origNameNoExt, saveName
 	{
 		Length = getResult("Branch length", i);
 		EuclideanLength = getResult("Euclidean distance", i);
-		Straightness = EuclideanLength / Length;  
-		setResult("Straightness", i, Straightness); 
+		Straightness = EuclideanLength / Length;
+		setResult("Straightness", i, Straightness);
 
 		totalLength = totalLength + Length;
 		meanEuclideanLength = meanEuclideanLength + EuclideanLength;
@@ -420,11 +420,11 @@ function QuantTJ(directory, resFolder, origIm, origName, origNameNoExt, saveName
 		IJ.renameResults("SummaryResults.xls", "Results"); // make table accessible
 	else
 		run("Clear Results");
-		
-	setResult("totalLength", nResults-1, totalLength); 
-	setResult("meanLength", nResults-1, meanLength); 
-	setResult("meanEuclideanLength", nResults-1, meanEuclideanLength); 
-	setResult("meanStraightness", nResults-1, meanStraightness); 
+
+	setResult("totalLength", nResults-1, totalLength);
+	setResult("meanLength", nResults-1, meanLength);
+	setResult("meanEuclideanLength", nResults-1, meanEuclideanLength);
+	setResult("meanStraightness", nResults-1, meanStraightness);
 
 	// Save Results - actual saving is done at the higher level function as this table include one line for each image
 	IJ.renameResults("Results", "SummaryResults.xls"); // rename to avoid table overwrite
@@ -481,4 +481,3 @@ function CleanUp()
 		//print("Morphological Segmentation Closed");
 	}
 }
-

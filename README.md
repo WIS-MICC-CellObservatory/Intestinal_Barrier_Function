@@ -4,8 +4,9 @@
 
 Morphological analysis of Intestinal Barrier Function based on images of epithelial tight junction (TJ).
 Analysis is done from two points of view:
-- Shape of single cells:  Area, Perimeter, Solidity, Roughness = Perim^2/(4 * pi * Area)
-- Shape of borders between adjacent cells : Length, Euclidean distance and Straightness of the independent TJ elements
+- Shape of single cells:  Area, Perimeter, Solidity, Roughness = Perim^2 / (4 * pi * Area)
+- Shape of edges between adjacent cells : Length, Euclidean distance and Straightness of the independent TJ elements
+
 
 Written by: Ofra Golani at MICC Cell Observatory, Weizmann Institute of Science
 
@@ -22,7 +23,7 @@ Go over the folder of the TJ files, for each file
  	 + Convert it to binary image
  	 + Add to RoiManager using Analyze Particles: filter by size [*MinCellSize*-*MaxCellSize*]
 
-- Cell perspective quantification: Area, Perimeter, Solidity, Roughness = Perim^2/(4 * pi * Area)
+- Cell perspective quantification: Area, Perimeter, Solidity, Roughness = Perim^2 / (4 * pi * Area)
 - TJ perspective quantification: Length, Euclidean distance and Straightness of the independent TJ elements (between TJ junction points)
  	 + Skeletonize the watershed lines
  	 + Find junction points (using Analyze Skeleton)
@@ -37,7 +38,7 @@ Use Straightness instead of Tortuosity to avoid dividing by zero for the case of
 ## Output
 
 - Save results:
- 	+ Detailed results tables (for cells and for borders) + overlay for each image
+ 	+ Detailed results tables (for cells and for edges) + overlay for each image
 	+ Summary table with one line for each image: including the average values of both types of analysis
 - Save the active macro parameters in a text file in the Results folder
 
