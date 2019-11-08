@@ -9,6 +9,7 @@ Analysis is done from two points of view:
 
 
 Written by: Ofra Golani at MICC Cell Observatory, Weizmann Institute of Science
+In collaboration with Inna Grosheva and Benjamin Geiger , Weizmann Institute of Science
 
 Software package: Fiji (ImageJ)
 
