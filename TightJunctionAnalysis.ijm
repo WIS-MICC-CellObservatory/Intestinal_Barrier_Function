@@ -81,7 +81,7 @@ var WaitTime = 7000; 		//2500; // 130000; 	// wait Time in ms for Morphological 
 var MinCellSize = 1000;   	// pixel^2
 var MaxCellSize = 150000;	// pixel^2
 
-var MaxRougnessForColorCode = 4;
+var MaxRougnessForColorCode = 8;
 var MinStraigtnessForColorCode = 0.3;
 
 var AreaLUTName = "Fire";
