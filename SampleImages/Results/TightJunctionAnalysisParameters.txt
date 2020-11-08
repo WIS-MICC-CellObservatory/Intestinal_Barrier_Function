@@ -1,0 +1,9 @@
+VersionName=v4
+useGaussBluhrFlag=0
+GaussBluhrSigma=1
+Tolerance=2800
+MinCellSize=1000
+MaxCellSize=150000
+MaxRougnessForColorCode=4
+MinStraigtnessForColorCode=0.3
+MinSkeletonArea=30

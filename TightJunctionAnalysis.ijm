@@ -1,3 +1,4 @@
+// @string(choices=("singleFile", "wholeFolder"), style="list") processMode
 /*
  * TightJunctionAnalysis.ijm
  *
@@ -64,6 +65,7 @@
  *
  */
 
+var VersionName = "v4"; 
 // Parameters
 // Mode of operation
 var processMode = "wholeFolder"; // "singleFile" or "wholeFolder"
@@ -72,9 +74,9 @@ var processMode = "wholeFolder"; // "singleFile" or "wholeFolder"
 tj_string = "_TJ";
 
 // Segmentation Parameters
-var useGaussBluhrFlag = 1; 	// 0 - goes with Tolerance 500/1500
+var useGaussBluhrFlag = 0; 	// 0 - goes with Tolerance 500/1500
 var GaussBluhrSigma = 1;   	//2;
-var Tolerance = 650;       	//500; 				// Tolerance - controls the morphological segmentation
+var Tolerance = 2800; //650; 		// Tolerance - controls the morphological segmentation
 var WaitTime = 7000; 		//2500; // 130000; 	// wait Time in ms for Morphological Segmentation, watch the log to see the actual time and tune it
 var MinCellSize = 1000;   	// pixel^2
 var MaxCellSize = 150000;	// pixel^2
@@ -131,8 +133,9 @@ function PrintPrms()
 {
 	// print parameters to Prm file for documentation
 	PrmFile = resFolder+"TightJunctionAnalysisParameters.txt";
-	File.saveString("useGaussBluhrFlag="+useGaussBluhrFlag, PrmFile);
+	File.saveString("VersionName="+VersionName, PrmFile);
 	File.append("", PrmFile);
+	File.append("useGaussBluhrFlag="+useGaussBluhrFlag, PrmFile);
 	File.append("GaussBluhrSigma="+GaussBluhrSigma, PrmFile);
 	File.append("Tolerance="+Tolerance, PrmFile);
 	File.append("MinCellSize="+MinCellSize, PrmFile);
@@ -354,7 +357,8 @@ function CreateAndSaveColorCodeImage(labeledImName, TableName, resFolder, saveNa
 	run(LUTName);
 	run("Calibration Bar...", "location=[Upper Right] fill=White label=Black number=5 decimal="+decimalVal+" font=12 zoom="+calibrationZoom+" overlay");
 	run("Flatten");
-	saveAs("Tiff", resFolder+origNameNoExt+"_"+FtrName+"_Flatten.tif");
+	//saveAs("Tiff", resFolder+origNameNoExt+"_"+FtrName+"_Flatten.tif");
+	saveAs("Tiff", resFolder+saveName+"_"+FtrName+"_Flatten.tif");
 }
 
 
@@ -480,4 +484,5 @@ function CleanUp()
 		run("Close");
 		//print("Morphological Segmentation Closed");
 	}
+	run("Collect Garbage");
 }

@@ -1,0 +1,7 @@
+ 	Label	nCells	meanArea	meanSolidity	meanRoughness	totalLength	meanLength	meanEuclideanLength	meanStraightness
+1	control_1	55	12743.47	0.89	1.70	17884.50	101.04	89.17	0.89
+2	control_2	48	13932.73	0.91	1.55	16816.81	96.65	86.88	0.90
+3	TypeII_flowers_1	16	29349.62	0.78	3.55	18068.76	159.90	90.98	0.66
+4	TypeII_flowers_2	70	9220.16	0.75	2.88	23491.00	98.70	69.44	0.76
+5	TypeI_zig_zag_1	19	26979.84	0.83	2.53	13718.58	138.57	91.92	0.68
+6	TypeI_zig_zag_2	27	18742.26	0.85	2.12	15068.67	126.63	101.07	0.82
