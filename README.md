@@ -1,8 +1,8 @@
-# Morphological analysis of Intestinal Barrier Function
+# Morphological analysis of Intestinal Barrier
 
 ## Overview
 
-Morphological analysis of Intestinal Barrier Function based on images of epithelial tight junction (TJ).
+Morphological analysis of Intestinal Barrier based on images of epithelial tight junction (TJ).
 Analysis is done from two points of view:
 - Shape of single cells:  Area, Perimeter, Solidity, Roughness = Perim^2 / (4 * pi * Area)
 - Shape of edges between adjacent cells : Length, Euclidean distance and Straightness of the independent TJ elements
