@@ -17,6 +17,7 @@ This macro was used in:  <br/> <br/>
 https://doi.org/10.1053/j.gastro.2020.07.003
 
 Software package: Fiji (ImageJ)
+
 Workflow language: ImageJ macro
 
 <p align="center">
